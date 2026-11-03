@@ -6,7 +6,7 @@ namespace PortfolioApi.Controllers;
 
 [ApiController]
 [Route("api/projects")]
-public class ProjectsController(IProjectService projects) : ControllerBase
+public class ProjectsController(ProjectService projects) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<ProjectResponse>>> GetProjects()

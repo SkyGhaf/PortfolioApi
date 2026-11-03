@@ -4,7 +4,7 @@ using PortfolioApi.Models;
 
 namespace PortfolioApi.Services;
 
-public class BlogpostService(PortfolioDbContext db) : IBlogpostService
+public class BlogpostService(PortfolioDbContext db) 
 {
     public async Task<List<BlogpostResponse>> GetAllAsync()
     {

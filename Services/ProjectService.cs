@@ -4,7 +4,7 @@ using PortfolioApi.Models;
 
 namespace PortfolioApi.Services;
 
-public class ProjectService(PortfolioDbContext db) : IProjectService
+public class ProjectService(PortfolioDbContext db) 
 {
     public async Task<List<ProjectResponse>> GetAllAsync()
     {

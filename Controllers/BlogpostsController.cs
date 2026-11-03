@@ -6,7 +6,7 @@ namespace PortfolioApi.Controllers;
 
 [ApiController]
 [Route("api/blogposts")]
-public class BlogpostsController(IBlogpostService blogposts) : ControllerBase
+public class BlogpostsController(BlogpostService blogposts) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<BlogpostResponse>>> GetBlogposts()
