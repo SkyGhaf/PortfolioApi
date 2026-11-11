@@ -42,3 +42,6 @@ dotnet run
 
 Zet /swagger achter het adres dat in de terminal verschijnt. Dan kun je alle endpoints testen.
 
+SQL opslag command: sqlcmd -S "(localdb)\MSSQLLocalDB" -d PortfolioDb -Q "SELECT * FROM Projects"
+
+                    sqlcmd -S "(localdb)\MSSQLLocalDB" -d PortfolioDb -Q "SELECT Id, Titel, Categorie FROM Projects" -W
