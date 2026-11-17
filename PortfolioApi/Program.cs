@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;                
 using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Data;
 using PortfolioApi.Services;
@@ -11,6 +12,10 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<BlogpostService>();
 
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()  
+    .AddRoles<IdentityRole>()                             
+    .AddEntityFrameworkStores<PortfolioDbContext>();       
+builder.Services.AddAuthorization();                       
 
 var app = builder.Build();
 
@@ -21,6 +26,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();                             
+app.UseAuthorization();                              
 app.MapControllers();
 
 app.Run();
