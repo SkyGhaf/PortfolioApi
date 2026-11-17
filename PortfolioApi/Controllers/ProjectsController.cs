@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Models;
 using PortfolioApi.Services;
@@ -25,6 +26,7 @@ public class ProjectsController(ProjectService projects) : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Editor,Admin")]
     public async Task<ActionResult<ProjectResponse>> CreateProject(ProjectRequest request)
     {
         var project = await projects.CreateAsync(request);
@@ -32,6 +34,7 @@ public class ProjectsController(ProjectService projects) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Editor,Admin")]
     public async Task<IActionResult> UpdateProject(int id, ProjectRequest request)
     {
         if (!await projects.UpdateAsync(id, request))
@@ -41,6 +44,7 @@ public class ProjectsController(ProjectService projects) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Editor,Admin")]
     public async Task<IActionResult> DeleteProject(int id)
     {
         if (!await projects.DeleteAsync(id))

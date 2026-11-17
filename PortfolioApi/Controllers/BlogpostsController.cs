@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Models;
 using PortfolioApi.Services;
@@ -25,6 +26,7 @@ public class BlogpostsController(BlogpostService blogposts) : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Editor,Admin")]
     public async Task<ActionResult<BlogpostResponse>> CreateBlogpost(BlogpostRequest request)
     {
         var blogpost = await blogposts.CreateAsync(request);
@@ -32,6 +34,7 @@ public class BlogpostsController(BlogpostService blogposts) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Editor,Admin")]
     public async Task<IActionResult> UpdateBlogpost(int id, BlogpostRequest request)
     {
         if (!await blogposts.UpdateAsync(id, request))
@@ -41,6 +44,7 @@ public class BlogpostsController(BlogpostService blogposts) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Editor,Admin")]
     public async Task<IActionResult> DeleteBlogpost(int id)
     {
         if (!await blogposts.DeleteAsync(id))
