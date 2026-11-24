@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Models;
@@ -9,10 +11,10 @@ namespace PortfolioApi.Controllers;
 public class AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    public async Task<IActionResult> Register(CredentialsDto request)
     {
         var user = new IdentityUser { UserName = request.Email, Email = request.Email };
-        var result = await userManager.CreateAsync(user, request.Wachtwoord);
+        var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
@@ -21,12 +23,17 @@ public class AuthController(UserManager<IdentityUser> userManager, SignInManager
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<IActionResult> Login(CredentialsDto request)
     {
-        var result = await signInManager.PasswordSignInAsync(request.Email, request.Wachtwoord, false, false);
+        var result = await signInManager.PasswordSignInAsync(request.Email, request.Password, false, false);
         if (!result.Succeeded)
             return Unauthorized();
 
         return Ok();
     }
+
+    [Authorize]
+    [HttpGet("me")]
+    public IActionResult Me() => Ok(new SessionDto(User.Identity!.Name!,
+        User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToArray()));
 }
