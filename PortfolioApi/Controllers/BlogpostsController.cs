@@ -44,7 +44,7 @@ public class BlogpostsController(BlogpostService blogposts) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = "Editor,Admin")]
+    [Authorize(Policy = "MagVerwijderen")]
     public async Task<IActionResult> DeleteBlogpost(int id)
     {
         if (!await blogposts.DeleteAsync(id))

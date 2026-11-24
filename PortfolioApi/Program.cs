@@ -12,10 +12,18 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<BlogpostService>();
 
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<PortfolioDbContext>();
-builder.Services.AddAuthorization();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequiredLength = 8;
+    })
+    .AddEntityFrameworkStores<PortfolioDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("MagVerwijderen", policy => policy
+        .RequireRole("Editor", "Admin")
+        .RequireClaim("MagVerwijderen"));
 
 var app = builder.Build();
 

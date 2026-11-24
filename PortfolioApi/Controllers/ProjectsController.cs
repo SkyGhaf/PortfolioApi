@@ -44,7 +44,7 @@ public class ProjectsController(ProjectService projects) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = "Editor,Admin")]
+    [Authorize(Policy = "MagVerwijderen")]
     public async Task<IActionResult> DeleteProject(int id)
     {
         if (!await projects.DeleteAsync(id))
