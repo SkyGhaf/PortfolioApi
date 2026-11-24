@@ -213,14 +213,28 @@ public class BlogpostsTests(PortfolioApiFactory factory)
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
+    [Fact]
+    public async Task Delete_EditorZonderClaim_Geeft403()
+    {
+        // Arrange
+        var blogpost = await MaakBlogpostAsync("Blogpost");
+        var client = await factory.MaakClientAsync("Editor");
+
+        // Act
+        var response = await client.DeleteAsync($"/api/blogposts/{blogpost.Id}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
     [Theory]
     [InlineData("Editor")]
     [InlineData("Admin")]
-    public async Task Delete_MetSchrijfrol_VerwijdertBlogpost(string rol)
+    public async Task Delete_MetSchrijfrolEnClaim_VerwijdertBlogpost(string rol)
     {
         // Arrange
         var blogpost = await MaakBlogpostAsync("Wordt verwijderd");
-        var client = await factory.MaakClientAsync(rol);
+        var client = await factory.MaakClientAsync(rol, magVerwijderen: true);
 
         // Act
         var response = await client.DeleteAsync($"/api/blogposts/{blogpost.Id}");
@@ -235,7 +249,7 @@ public class BlogpostsTests(PortfolioApiFactory factory)
     public async Task Delete_OnbekendId_Geeft404()
     {
         // Arrange
-        var client = await factory.MaakClientAsync("Editor");
+        var client = await factory.MaakClientAsync("Editor", magVerwijderen: true);
 
         // Act
         var response = await client.DeleteAsync("/api/blogposts/999999");

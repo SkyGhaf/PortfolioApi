@@ -215,14 +215,28 @@ public class ProjectsTests(PortfolioApiFactory factory)
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
+    [Fact]
+    public async Task Delete_EditorZonderClaim_Geeft403()
+    {
+        // Arrange
+        var project = await MaakProjectAsync("Project");
+        var client = await factory.MaakClientAsync("Editor");
+
+        // Act
+        var response = await client.DeleteAsync($"/api/projects/{project.Id}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
     [Theory]
     [InlineData("Editor")]
     [InlineData("Admin")]
-    public async Task Delete_MetSchrijfrol_VerwijdertProject(string rol)
+    public async Task Delete_MetSchrijfrolEnClaim_VerwijdertProject(string rol)
     {
         // Arrange
         var project = await MaakProjectAsync("Wordt verwijderd");
-        var client = await factory.MaakClientAsync(rol);
+        var client = await factory.MaakClientAsync(rol, magVerwijderen: true);
 
         // Act
         var response = await client.DeleteAsync($"/api/projects/{project.Id}");
@@ -237,7 +251,7 @@ public class ProjectsTests(PortfolioApiFactory factory)
     public async Task Delete_OnbekendId_Geeft404()
     {
         // Arrange
-        var client = await factory.MaakClientAsync("Editor");
+        var client = await factory.MaakClientAsync("Editor", magVerwijderen: true);
 
         // Act
         var response = await client.DeleteAsync("/api/projects/999999");

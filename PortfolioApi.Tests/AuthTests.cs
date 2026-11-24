@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using PortfolioApi.Models;
 
 namespace PortfolioApi.Tests;
 
@@ -16,7 +17,7 @@ public class AuthTests(PortfolioApiFactory factory)
         var email = $"{Guid.NewGuid()}@test.nl";
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/auth/register", new { email, wachtwoord = "Test123!" });
+        var response = await client.PostAsJsonAsync("/api/auth/register", new { email, password = "Test123!" });
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -34,7 +35,7 @@ public class AuthTests(PortfolioApiFactory factory)
         var client = factory.CreateClient();
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/auth/register", new { email = $"{Guid.NewGuid()}@test.nl", wachtwoord = "123" });
+        var response = await client.PostAsJsonAsync("/api/auth/register", new { email = $"{Guid.NewGuid()}@test.nl", password = "123" });
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -46,10 +47,10 @@ public class AuthTests(PortfolioApiFactory factory)
         // Arrange
         var client = factory.CreateClient();
         var email = $"{Guid.NewGuid()}@test.nl";
-        await client.PostAsJsonAsync("/api/auth/register", new { email, wachtwoord = "Test123!" });
+        await client.PostAsJsonAsync("/api/auth/register", new { email, password = "Test123!" });
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/auth/login", new { email, wachtwoord = "Test123!" });
+        var response = await client.PostAsJsonAsync("/api/auth/login", new { email, password = "Test123!" });
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -62,10 +63,38 @@ public class AuthTests(PortfolioApiFactory factory)
         // Arrange
         var client = factory.CreateClient();
         var email = $"{Guid.NewGuid()}@test.nl";
-        await client.PostAsJsonAsync("/api/auth/register", new { email, wachtwoord = "Test123!" });
+        await client.PostAsJsonAsync("/api/auth/register", new { email, password = "Test123!" });
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/auth/login", new { email, wachtwoord = "FoutWachtwoord1!" });
+        var response = await client.PostAsJsonAsync("/api/auth/login", new { email, password = "FoutWachtwoord1!" });
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Me_Ingelogd_GeeftRollen()
+    {
+        // Arrange
+        var client = await factory.MaakClientAsync("Editor");
+
+        // Act
+        var response = await client.GetAsync("/api/auth/me");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var sessie = await response.Content.ReadFromJsonAsync<SessionDto>();
+        Assert.Contains("Editor", sessie!.Roles);
+    }
+
+    [Fact]
+    public async Task Me_ZonderLogin_Geeft401()
+    {
+        // Arrange
+        var client = await factory.MaakClientAsync();
+
+        // Act
+        var response = await client.GetAsync("/api/auth/me");
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
